@@ -12,12 +12,13 @@ By its nature this server is intended to be installed and used locally on the de
 
 ### Setup
 
-For the following configuration, you should have `npx`, `tsx` and Claude Code installed (other setups are possible).
+For the following configuration, you should have `node`, `npm` and Claude Code installed (other setups are possible).
 
-Clone this repository then configure it for use with Claude Code as follows (this adds it globally for all your projects):
- 
+Clone this repository, install dependencies, then configure it for use with Claude Code as follows (this adds it globally for all your projects):
+
 ```bash
-claude mcp add coding-session-reporter --scope user -- npx tsx <path-to-repo>/src/index.ts
+cd <path-to-repo> && npm install
+claude mcp add coding-session-reporter --scope user -- <path-to-repo>/node_modules/.bin/tsx <path-to-repo>/src/index.ts
 ```
 
 You will then (after granting permissions for this server when prompted) be able to ask Claude various questions about your Claude sessions, as in the following examples.
@@ -34,8 +35,8 @@ You will then (after granting permissions for this server when prompted) be able
 
 - **`list_projects`** — List all projects that have Claude Code transcript data, with session counts and last active date
 - **`get_sessions_summary`** — Get a high level summary of sessions (optionally for specific project and/or date range)
-- **`get_sessions_log`** — full session detail grouped by project (optionally for a specific project, session ID and/or date/range)
+- **`get_session_logs`** — full session detail grouped by project (optionally for a specific project, session ID and/or date/range)
 - **`list_subagents`** - list all subagents grouped by project (optionally for a specific project and/or date range)
-- **`get_subgent_detail`** - get full details (user messages, tools used) for a specific subagent
+- **`get_subagent_detail`** - get full details (user messages, tools used) for a specific subagent
 
 
