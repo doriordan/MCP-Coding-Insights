@@ -6,6 +6,7 @@ import { buildSessionsSummary, SESSION_SUMMARY_FIELDS } from './tools/getSession
 import { buildSessionLogs, SESSION_DETAIL_FIELDS } from './tools/getSessionLogs.js'
 import { buildListSubagents } from './tools/listSubagents.js'
 import { buildSubagentDetail } from './tools/getSubagentDetail.js'
+import { buildSearchSessions } from './tools/searchSessions.js'
 
 const server = new McpServer({
   name: 'coding-session-reporter',
@@ -86,6 +87,22 @@ server.registerTool(
   },
   async (params) => ({
     content: [{ type: 'text', text: JSON.stringify(await buildSubagentDetail(params), null, 2) }],
+  })
+)
+
+server.registerTool(
+  'search_sessions',
+  {
+    title: 'Search Sessions',
+    description: 'Search Claude Code sessions for sessions containing a keyword or phrase in user messages. Returns matching sessions grouped by project, with the specific matching messages.',
+    inputSchema: {
+      query: z.string().min(1).describe('Keyword or phrase to search for (case-insensitive)'),
+      ...dateRangeSchema,
+      maxMatchesPerSession: z.number().int().min(1).optional().describe('Max matching messages to return per session, most recent first. Defaults to 5.'),
+    },
+  },
+  async (params) => ({
+    content: [{ type: 'text', text: JSON.stringify(await buildSearchSessions(params), null, 2) }],
   })
 )
 
