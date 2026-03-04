@@ -1,6 +1,6 @@
-# Coding Session Reporter
+# MCP Coding Insights
 
-Lightweight MCP server for querying and reporting on your agentic coding sessions across potentially multiple projects and sessions.
+Lightweight MCP server for obtaining insights into your agentic coding sessions across potentially multiple projects and sessions.
 
 Initially this tool supports only Claude Code.
 
