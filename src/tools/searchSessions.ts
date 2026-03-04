@@ -1,10 +1,11 @@
 import {
+  defaultDateRange,
   getProjectDirs,
   loadSessionsIndex,
   filterEntriesByDateRange,
   parseDetailFromJsonl,
 } from '../transcripts.js'
-import type { SearchResult, SessionSummary } from '../types.js'
+import type { MessageMatch, SearchResult, SessionSummary } from '../types.js'
 
 interface SearchSessionsParams {
   query: string
@@ -17,7 +18,8 @@ interface SearchSessionsParams {
 export async function buildSearchSessions(
   params: SearchSessionsParams,
 ): Promise<Record<string, SearchResult[]>> {
-  const { query, from, to, project, maxMatchesPerSession = 5 } = params
+  const { query, project, maxMatchesPerSession = 5 } = params
+  const { from, to } = { ...defaultDateRange(), ...params }
   const lowerQuery = query.toLowerCase()
 
   const projectDirs = getProjectDirs()
@@ -32,6 +34,7 @@ export async function buildSearchSessions(
     if (project && projectName.toLowerCase() !== project.toLowerCase()) continue
 
     const index = loadSessionsIndex(dirPath)
+    if (!index) continue
     const entries = filterEntriesByDateRange(index.entries, from, to)
 
     for (const entry of entries.filter((e) => !e.isSidechain)) {
@@ -45,7 +48,12 @@ export async function buildSearchSessions(
       }
 
       const promise = parseDetailFromJsonl(projectName, summary, entry.fullPath).then((detail) => {
-        const allMatches = detail.userMessages.filter((msg) =>
+        const allMessages: MessageMatch[] = [
+          ...detail.userMessages.map((m) => ({ ...m, role: 'user' as const })),
+          ...detail.assistantMessages.map((m) => ({ ...m, role: 'assistant' as const })),
+        ]
+
+        const allMatches = allMessages.filter((msg) =>
           msg.text.toLowerCase().includes(lowerQuery),
         )
         if (allMatches.length === 0) return null

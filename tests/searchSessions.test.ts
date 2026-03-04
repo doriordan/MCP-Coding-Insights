@@ -52,6 +52,10 @@ const mockDetail1 = {
     { text: 'the error happens in auth.ts', timestamp: '2026-03-01T10:10:00Z' },
     { text: 'looks good now', timestamp: '2026-03-01T10:20:00Z' },
   ],
+  assistantMessages: [
+    { text: 'I found the bug in the authentication handler', timestamp: '2026-03-01T10:05:00Z' },
+    { text: 'The fix looks correct', timestamp: '2026-03-01T10:25:00Z' },
+  ],
   toolsUsed: [],
 }
 
@@ -67,6 +71,7 @@ const mockDetail2 = {
     { text: 'add dark mode', timestamp: '2026-03-02T09:00:00Z' },
     { text: 'use CSS variables', timestamp: '2026-03-02T09:10:00Z' },
   ],
+  assistantMessages: [],
   toolsUsed: [],
 }
 
@@ -93,8 +98,11 @@ describe('buildSearchSessions', () => {
       'my-project': [
         {
           sessionId: 'sess-1',
-          matchCount: 1,
-          matches: [{ text: 'fix the login bug' }],
+          matchCount: 2,
+          matches: expect.arrayContaining([
+            expect.objectContaining({ text: 'fix the login bug', role: 'user' }),
+            expect.objectContaining({ text: 'I found the bug in the authentication handler', role: 'assistant' }),
+          ]),
         },
       ],
     })
@@ -119,16 +127,16 @@ describe('buildSearchSessions', () => {
     const result = await buildSearchSessions({ query: 'the' })
 
     const sess1 = result['my-project'].find((r) => r.sessionId === 'sess-1')
-    expect(sess1?.matchCount).toBe(2) // "fix the login bug" and "the error happens"
+    // "fix the login bug", "the error happens in auth.ts", "I found the bug in the authentication handler", "The fix looks correct"
+    expect(sess1?.matchCount).toBe(4)
   })
 
   it('sorts matches descending by timestamp (most recent first)', async () => {
     const result = await buildSearchSessions({ query: 'the' })
 
     const sess1 = result['my-project'].find((r) => r.sessionId === 'sess-1')!
-    // "the error happens in auth.ts" at 10:10 comes before "fix the login bug" at 10:00
-    expect(sess1.matches[0].timestamp).toBe('2026-03-01T10:10:00Z')
-    expect(sess1.matches[1].timestamp).toBe('2026-03-01T10:00:00Z')
+    const timestamps = sess1.matches.map((m) => m.timestamp)
+    expect(timestamps).toEqual([...timestamps].sort((a, b) => b.localeCompare(a)))
   })
 
   it('caps matches per session to maxMatchesPerSession, keeping most recent', async () => {
@@ -136,16 +144,15 @@ describe('buildSearchSessions', () => {
 
     const sess1 = result['my-project'].find((r) => r.sessionId === 'sess-1')!
     expect(sess1.matches).toHaveLength(1)
-    expect(sess1.matches[0].timestamp).toBe('2026-03-01T10:10:00Z') // most recent kept
-    expect(sess1.matchCount).toBe(2) // total found, not capped
+    expect(sess1.matches[0].timestamp).toBe('2026-03-01T10:25:00Z') // most recent
+    expect(sess1.matchCount).toBe(4) // total found, not capped
   })
 
   it('defaults maxMatchesPerSession to 5', async () => {
-    // sess-1 has only 2 matches for "the", both should be returned with default cap
     const result = await buildSearchSessions({ query: 'the' })
 
     const sess1 = result['my-project'].find((r) => r.sessionId === 'sess-1')!
-    expect(sess1.matches).toHaveLength(2)
+    expect(sess1.matches).toHaveLength(4) // all 4 matches fit within default cap of 5
   })
 
   it('filters by project name (case-insensitive)', async () => {
@@ -180,6 +187,36 @@ describe('buildSearchSessions', () => {
       startedAt: '2026-03-01T10:00:00Z',
       firstPrompt: 'fix the login bug',
       messageCount: 3,
+    })
+  })
+
+  it('includes role field on each match', async () => {
+    const result = await buildSearchSessions({ query: 'bug' })
+    const matches = result['my-project'][0].matches
+
+    for (const match of matches) {
+      expect(['user', 'assistant']).toContain(match.role)
+    }
+  })
+
+  it('returns role=user for user messages and role=assistant for assistant messages', async () => {
+    const result = await buildSearchSessions({ query: 'fix' })
+    const matches = result['my-project'][0].matches
+
+    const userMatch = matches.find((m) => m.text === 'fix the login bug')
+    expect(userMatch?.role).toBe('user')
+
+    const assistantMatch = matches.find((m) => m.text === 'The fix looks correct')
+    expect(assistantMatch?.role).toBe('assistant')
+  })
+
+  it('searches only assistant messages when query matches only assistant text', async () => {
+    const result = await buildSearchSessions({ query: 'authentication handler' })
+
+    expect(result['my-project'][0].matches).toHaveLength(1)
+    expect(result['my-project'][0].matches[0]).toMatchObject({
+      text: 'I found the bug in the authentication handler',
+      role: 'assistant',
     })
   })
 })

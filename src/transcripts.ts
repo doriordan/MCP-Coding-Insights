@@ -183,6 +183,7 @@ export async function parseDetailFromJsonl(
   dateRange?: { from: string; to: string },
 ): Promise<SessionDetail> {
   const userMessages: UserMessage[] = []
+  const assistantMessages: UserMessage[] = []
   const toolsUsed: ToolUse[] = []
   let endedAt = summary.startedAt
 
@@ -192,7 +193,7 @@ export async function parseDetailFromJsonl(
   try {
     content = await fsp.readFile(jsonlPath, 'utf-8')
   } catch {
-    return { ...summary, endedAt, userMessages, toolsUsed: [] }
+    return { ...summary, endedAt, userMessages, assistantMessages, toolsUsed: [] }
   }
 
   for (const line of content.split('\n')) {
@@ -221,11 +222,15 @@ export async function parseDetailFromJsonl(
       }
 
       if (inRange && msg.role === 'assistant' && Array.isArray(msg.content)) {
+        let text = ''
         for (const block of msg.content) {
+          if (block?.type === 'text') text += block.text
           if (block?.type === 'tool_use' && block.name) {
             toolsUsed.push({ name: block.name as string, timestamp: ts })
           }
         }
+        text = stripSystemInjections(text)
+        if (text) assistantMessages.push({ text, timestamp: ts })
       }
     } catch {
       // skip malformed lines
@@ -239,6 +244,7 @@ export async function parseDetailFromJsonl(
     ...summary,
     endedAt,
     userMessages,
+    assistantMessages,
     toolsUsed,
     subagents,
   }

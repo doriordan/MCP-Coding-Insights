@@ -94,7 +94,7 @@ server.registerTool(
   'search_sessions',
   {
     title: 'Search Sessions',
-    description: 'Search Claude Code sessions for sessions containing a keyword or phrase in user messages. Returns matching sessions grouped by project, with the specific matching messages.',
+    description: 'Search Claude Code sessions for sessions containing a keyword or phrase in user or assistant messages. Returns matching sessions grouped by project, with the specific matching messages.',
     inputSchema: {
       query: z.string().min(1).describe('Keyword or phrase to search for (case-insensitive)'),
       ...dateRangeSchema,

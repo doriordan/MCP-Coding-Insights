@@ -44,8 +44,15 @@ export interface ToolUse {
 export interface SessionDetail extends SessionSummary {
   endedAt: string
   userMessages: UserMessage[]
+  assistantMessages: UserMessage[]
   toolsUsed: ToolUse[]
   subagents?: SubagentSummary[]
+}
+
+export interface MessageMatch {
+  text: string
+  timestamp: string
+  role: 'user' | 'assistant'
 }
 
 export interface SearchResult {
@@ -56,7 +63,7 @@ export interface SearchResult {
   endedAt?: string
   firstPrompt: string
   messageCount: number
-  matches: UserMessage[]
+  matches: MessageMatch[]
   matchCount: number
 }
 
