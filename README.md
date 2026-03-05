@@ -1,6 +1,6 @@
 # MCP Coding Insights
 
-Lightweight MCP server that lets you gain desired insights into your coding activities by just asking your agent.
+Lightweight MCP server that lets you flexibly gather insights into your coding activities by just asking your agent.
 
 Initially this tool supports only Claude Code.
 
@@ -8,7 +8,7 @@ Initially this tool supports only Claude Code.
 
 Claude Code supports an `/insights` command that generates a very specific report on your coding activity for a fixed time span.
 
-This MCP server expands that capability by exposing tools that the agent can use to serve reports tailored to your stated requirements as opposed to a predefined format, and if you want can be scoped to specific projects and time spans.
+This MCP server expands that capability by exposing tools that the agent can use to serve reports tailored to your stated requirements as opposed to a predefined format, and if you want can be scoped to specific projects and time spans. The tools are not only useful for strategic reports and insights but also for quick ad-hoc reporting and searches.
 
 The tools access the same session transcript files under `~/.claude/projects/`as the `/insights` command, but give you the power to make ad-hoc reporting requests on that session information.
 
