@@ -9,7 +9,7 @@ import { buildSubagentDetail } from './tools/getSubagentDetail.js'
 import { buildSearchSessions } from './tools/searchSessions.js'
 
 const server = new McpServer({
-  name: 'coding-session-reporter',
+  name: 'mcp-coding-insights',
   version: '0.1.0',
 })
 

@@ -34,7 +34,6 @@ The following are just a few examples of the kind of insights and reports that y
 
 `show me all messages in the last month that reference typescript, broken down by project`
 
-
 # Quickstart
 
 By its nature this server is intended to be installed and used locally on the developer laptop or workstation, alongside Claude Code.
@@ -47,7 +46,7 @@ Clone this repository, install dependencies, then configure it for use with Clau
 
 ```bash
 cd <path-to-repo> && npm install
-claude mcp add coding-session-reporter --scope user -- <path-to-repo>/node_modules/.bin/tsx <path-to-repo>/src/index.ts
+claude mcp add mcp-coding-insights --scope user -- `pwd`/node_modules/.bin/tsx `pwd`/src/index.ts
 ```
 
 You will then (after granting permissions for this server when prompted) be able to ask Claude various questions about your Claude sessions - you could start by trying some of the example prompts above.
