@@ -43,6 +43,7 @@ export async function buildSearchSessions(
         project: projectName,
         gitBranch: entry.gitBranch ?? 'unknown',
         startedAt: entry.created,
+        endedAt: entry.modified,
         firstPrompt: entry.firstPrompt ?? '',
         messageCount: entry.messageCount,
       }

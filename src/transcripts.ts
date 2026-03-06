@@ -135,6 +135,7 @@ export function parseSessionsFromIndex(project: string, entries: IndexEntry[]): 
       project,
       gitBranch: e.gitBranch ?? 'unknown',
       startedAt: e.created,
+      endedAt: e.modified,
       firstPrompt: stripSystemInjections(e.firstPrompt ?? ''),
       messageCount: e.messageCount,
     }))

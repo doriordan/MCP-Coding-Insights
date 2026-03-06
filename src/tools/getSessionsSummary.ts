@@ -1,7 +1,7 @@
 import { defaultDateRange, filterEntriesByDateRange, getProjectDirs, loadSessionsIndex, parseSessionsFromIndex } from '../transcripts.js'
 import type { SessionSummary } from '../types.js'
 
-export const SESSION_SUMMARY_FIELDS = ['sessionId', 'project', 'gitBranch', 'startedAt', 'firstPrompt', 'messageCount'] as const
+export const SESSION_SUMMARY_FIELDS = ['sessionId', 'project', 'gitBranch', 'startedAt', 'endedAt', 'firstPrompt', 'messageCount'] as const
 export type SessionSummaryField = typeof SESSION_SUMMARY_FIELDS[number]
 
 interface Params {

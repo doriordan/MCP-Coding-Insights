@@ -12,6 +12,7 @@ export interface SessionSummary {
   project: string
   gitBranch: string
   startedAt: string
+  endedAt: string
   firstPrompt: string
   messageCount: number
 }
