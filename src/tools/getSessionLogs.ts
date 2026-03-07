@@ -29,7 +29,8 @@ export async function buildSessionLogs(params: Params): Promise<Record<string, (
     const index = loadSessionsIndex(dirPath)
     if (!index) continue
 
-    let summaries = parseSessionsFromIndex(name, filterEntriesByDateRange(index.entries, from, to))
+    const entries = params.sessionId ? index.entries : filterEntriesByDateRange(index.entries, from, to)
+    let summaries = parseSessionsFromIndex(name, entries)
     if (params.sessionId) summaries = summaries.filter(s => s.sessionId === params.sessionId)
     if (summaries.length === 0) continue
 
