@@ -16,7 +16,7 @@ The tools access the same session transcript files under `~/.claude/projects/`as
 
 This repository also includes a HTML Coding Reporter skill that helps Claude to generate self-contained HTML reports into your coding activities. The skill is used to generate an appropriate report based on the expressed user intent, using the MCP server to retrieve relavant session details.
 
-Use of this skill is entirely optional -  without this skill Claude will generally output the report straight to the terminal. 
+Use of this skill is entirely optional -  without this skill Claude will generally output the report in text format straight to the terminal. 
 
 Feel free to extend or customise the skill according to your use cases and preferences.
 
